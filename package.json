@@ -4,7 +4,8 @@
   "description": "Proxy based safe object traverser utility",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "cov": "jest --coverage"  
   },
   "keywords": [
     "value",

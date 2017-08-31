@@ -6,20 +6,20 @@ class ValueNode {
         this.$path = path;
         this.$error = error;
         // lodash functions
-        this.$_find = this._lodashDecorator('find', _.find, 0);        
+        this.$_find = this._lodashDecorator('find', _.find, 0);
     }
     _nextValue(nextValue, nextPath) {
         const nextError = this.$error || (
-            nextValue === undefined 
+            nextValue === undefined
             ? {
                 $path: nextPath,
                 $lastPath: this.$path,
                 $lastValue: this.$value
             }
             : undefined
-        );    
+        );
         return valueProxy(nextValue, nextPath, nextError);
-    }    
+    }
     _lodashDecorator(funcName, func, valueParamIndex) {
         return (...params) => {
             const paramsWithValue = params
@@ -28,12 +28,12 @@ class ValueNode {
                 nextValue = func(...paramsWithValue),
                 nextPath = `${this.$path}.$_${funcName}(${params.map(JSON.stringify)})`;
             return this._nextValue(nextValue, nextPath);
-        };        
+        };
     }
     $log() {
     	const value = this.$value;
     	console.group(this.$path, '=', value);
-        if (value === undefined) {        	
+        if (value === undefined) {
             console.log('Undefined since:',this.$error.$path);
             console.log('Last defined value:', this.$error.$lastPath, '=', this.$error.$lastValue);
         }
@@ -55,7 +55,7 @@ export const valueProxy = (() => {
                 return;
             }
             // are we an array/object?
-            const nextValue = typeof receiver.$value === 'object' 
+            const nextValue = typeof receiver.$value === 'object'
                     ? Reflect.get(receiver.$value, prop)
                     : undefined,
                 nextPath = Array.isArray(receiver.$value)
