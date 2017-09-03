@@ -21,6 +21,9 @@ describe('ValueProxy', () => {
         expect(root._value).toBeUndefined();
         expect(root._path).toBeUndefined();
         expect(root._error).toBeUndefined();
+        expect(root._options).toBeUndefined();        
+        expect(root._optionDefault).toBeUndefined();
+        expect(root._nextError).toBeUndefined();
         expect(root._nextValue).toBeUndefined();
         expect(root._lodashDecorator).toBeUndefined();
     });
@@ -92,7 +95,27 @@ describe('ValueProxy', () => {
             expect(global.console.groupEnd).toHaveBeenCalledWith('');
         });
     });
-
+    
+    describe('options.autoLog', () => {
+        test('off by default', () => {
+            root.foo.$value();
+            expect(global.console.group).not.toHaveBeenCalled();
+        });
+        test('auto-logs undefined value', () => {
+            root = valueProxy(mockData, { autoLog: true });
+            root.foo.$value();
+            expect(global.console.group).toHaveBeenCalledWith('root.foo', '=', undefined);
+            expect(global.console.log).toHaveBeenCalledWith('Undefined since:', 'root.foo');
+            expect(global.console.log).toHaveBeenCalledWith('Last defined value:', 'root', '=', mockData);
+            expect(global.console.groupEnd).toHaveBeenCalledWith('');
+        });
+        test('doesn\'t auto-log defined value', () => {
+            root = valueProxy(mockData, { autoLog: true });
+            root.metadata.$value();
+            expect(global.console.group).not.toHaveBeenCalled();
+        });
+    });
+    
     describe('$_find', () => {
         test('finds object by id', () => {
             const result = root.channels.$_find({ id: 'c1' }).name;

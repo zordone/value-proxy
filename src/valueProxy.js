@@ -1,24 +1,31 @@
 import _ from 'lodash';
 
 class ValueNode {
-	constructor(value, path = 'root', error) {
+	constructor(value, options = {}, path = 'root', error) {
     	this._value = value;
         this._path = path;
         this._error = error;
+        this._options = {
+            autoLog: this._optionDefault(options, 'autoLog', false)
+        };
         // lodash functions
         this.$_find = this._lodashDecorator('find', _.find, 0);
     }
-    _nextValue(nextValue, nextPath) {
-        const nextError = this._error || (
-            nextValue === undefined
-            ? {
+    _optionDefault(options, name, defaultValue) {
+        return name in options ? options[name] : defaultValue;        
+    }
+    _nextError(nextValue, nextPath) {
+        return nextValue === undefined
+            ? { 
                 $path: nextPath,
                 $lastPath: this._path,
                 $lastValue: this._value
             }
-            : undefined
-        );
-        return valueProxy(nextValue, nextPath, nextError);
+            : undefined;        
+    }
+    _nextValue(nextValue, nextPath) {
+        const nextError = this._error || this._nextError(nextValue, nextPath);
+        return valueProxy(nextValue, this._options, nextPath, nextError);
     }
     _lodashDecorator(funcName, func, valueParamIndex) {
         return (...params) => {
@@ -31,7 +38,11 @@ class ValueNode {
         };
     }
     $value() {
-        return this._value;
+        const value = this._value;
+        if (this._options.autoLog && value === undefined) {
+            this.$log();
+        }
+        return value;
     }
     $error() {
         return this._error;
@@ -78,5 +89,5 @@ export const valueProxy = (() => {
             return obj._nextValue(nextValue, nextPath);
         }
     };
-    return (object, path, error) => new Proxy(new ValueNode(object, path, error), handler);
+    return (object, options, path, error) => new Proxy(new ValueNode(object, options, path, error), handler);
 })();

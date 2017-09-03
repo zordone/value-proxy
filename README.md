@@ -12,7 +12,6 @@ TODO:
 - Include more lodash?
 - Add map/filter/reduce methods
 - Method error handling. (Ex: calling map on a number -> $error, add error types: undefined, method doesn't exists, method returned undefined)
-- Change $value to a method. Auto log if `undefined`. Change $error too?
 - Add `$default` method
 - Add `$throw` method
 - Finish readme
