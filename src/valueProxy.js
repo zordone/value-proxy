@@ -1,8 +1,8 @@
 import _ from 'lodash';
 
 class ValueNode {
-	constructor(value, options = {}, path = 'root', error) {
-    	this._value = value;
+    constructor(value, options = {}, path = 'root', error) {
+        this._value = value;
         this._path = path;
         this._error = error;
         this._options = {
@@ -12,20 +12,20 @@ class ValueNode {
         this.$_find = this._lodashDecorator('find', _.find, 0);
     }
     _optionDefault(options, name, defaultValue) {
-        return name in options ? options[name] : defaultValue;        
+        return name in options ? options[name] : defaultValue;
     }
     _nextError(nextValue, nextPath) {
         return nextValue === undefined
-            ? { 
+            ? {
                 $path: nextPath,
                 $lastPath: this._path,
                 $lastValue: this._value
             }
-            : undefined;        
+            : undefined;
     }
     _nextValue(nextValue, nextPath) {
         const nextError = this._error || this._nextError(nextValue, nextPath);
-        return valueProxy(nextValue, this._options, nextPath, nextError);
+        return valueProxy(nextValue, this._options, nextPath, nextError); // eslint-disable-line no-use-before-define
     }
     _lodashDecorator(funcName, func, valueParamIndex) {
         return (...params) => {
@@ -48,46 +48,50 @@ class ValueNode {
         return this._error;
     }
     $log() {
-    	const value = this._value;
-    	console.group(this._path, '=', value);
+        /* eslint-disable no-console */
+        const value = this._value;
+        console.group(this._path, '=', value);
         if (value === undefined) {
-            console.log('Undefined since:',this._error.$path);
+            console.log('Undefined since:', this._error.$path);
             console.log('Last defined value:', this._error.$lastPath, '=', this._error.$lastValue);
         }
         console.groupEnd('');
         console.log('');
         return this;
+        /* eslint-enable no-console */
     }
 }
 
-export const valueProxy = (() => {
+const valueProxy = (() => {
     const handler = {
-        get(obj, prop, receiver) {
+        get(obj, prop) {
             // default behaviour for symbol prop names
             if (typeof prop === 'symbol') {
-            	return Reflect.get(obj, prop);
+                return Reflect.get(obj, prop);
             }
             // auto-bind public methods to enable access to privates
             if (prop.startsWith('$')) {
-            	let value = Reflect.get(obj, prop);
+                let value = Reflect.get(obj, prop);
                 if (typeof value === 'function') {
                     value = value.bind(obj);
                 }
                 return value;
-            }           
+            }
             // hide private methods
-            if (prop.startsWith('_')) {
-                return;
+            if (prop.startsWith('_')) {
+                return undefined;
             }
             // are we an array/object?
             const nextValue = typeof obj._value === 'object'
                     ? Reflect.get(obj._value, prop)
                     : undefined,
                 nextPath = Array.isArray(obj._value)
-                	? `${obj._path}[${prop}]`
+                    ? `${obj._path}[${prop}]`
                     : `${obj._path}.${prop}`;
             return obj._nextValue(nextValue, nextPath);
         }
     };
     return (object, options, path, error) => new Proxy(new ValueNode(object, options, path, error), handler);
 })();
+
+export default valueProxy;

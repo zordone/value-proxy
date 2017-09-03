@@ -6,6 +6,7 @@ Features:
 - Keeps detailed debug information about where in the expression we got undefined, and what was the last valid value.
 - Can inline lodash calls in the chain and keep the logical order of things.
 - Log helper for debugging.
+- Can automatically log debug info whenever an `undefined` value is encountered.
 
 TODO:
 

@@ -1,3 +1,5 @@
+/* global jest,beforeEach,describe,test,expect */
+
 import { mockData } from './mockData';
 import { valueProxy } from './valueProxy';
 
@@ -7,7 +9,6 @@ global.console.group = jest.fn();
 global.console.groupEnd = jest.fn();
 
 describe('ValueProxy', () => {
-
     let root;
 
     beforeEach(() => {
@@ -21,7 +22,7 @@ describe('ValueProxy', () => {
         expect(root._value).toBeUndefined();
         expect(root._path).toBeUndefined();
         expect(root._error).toBeUndefined();
-        expect(root._options).toBeUndefined();        
+        expect(root._options).toBeUndefined();
         expect(root._optionDefault).toBeUndefined();
         expect(root._nextError).toBeUndefined();
         expect(root._nextValue).toBeUndefined();
@@ -95,7 +96,7 @@ describe('ValueProxy', () => {
             expect(global.console.groupEnd).toHaveBeenCalledWith('');
         });
     });
-    
+
     describe('options.autoLog', () => {
         test('off by default', () => {
             root.foo.$value();
@@ -115,7 +116,7 @@ describe('ValueProxy', () => {
             expect(global.console.group).not.toHaveBeenCalled();
         });
     });
-    
+
     describe('$_find', () => {
         test('finds object by id', () => {
             const result = root.channels.$_find({ id: 'c1' }).name;
@@ -133,5 +134,4 @@ describe('ValueProxy', () => {
             expect(result.$error().$path).toBe('root.foo');
         });
     });
-
 });
