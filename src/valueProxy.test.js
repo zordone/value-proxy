@@ -1,7 +1,7 @@
-/* global jest,beforeEach,describe,test,expect */
+/* global jest,beforeEach,describe,test,expect,global */
 
-import { mockData } from './mockData';
-import { valueProxy } from './valueProxy';
+import mockData from './mockData';
+import valueProxy from './valueProxy';
 
 // mock console
 global.console.log = jest.fn();
@@ -18,15 +18,26 @@ describe('ValueProxy', () => {
         root = valueProxy(mockData);
     });
 
-    test('privates are not accessible', () => {
-        expect(root._value).toBeUndefined();
-        expect(root._path).toBeUndefined();
-        expect(root._error).toBeUndefined();
-        expect(root._options).toBeUndefined();
-        expect(root._optionDefault).toBeUndefined();
-        expect(root._nextError).toBeUndefined();
-        expect(root._nextValue).toBeUndefined();
-        expect(root._lodashDecorator).toBeUndefined();
+    describe('technical', () => {
+        test('privates are not accessible', () => {
+            expect(root._value).toBeUndefined();
+            expect(root._path).toBeUndefined();
+            expect(root._error).toBeUndefined();
+            expect(root._options).toBeUndefined();
+            expect(root._optionDefault).toBeUndefined();
+            expect(root._nextError).toBeUndefined();
+            expect(root._nextValue).toBeUndefined();
+            expect(root._lodashDecorator).toBeUndefined();
+        });
+        test('keeps default behaviour for symbol prop names', () => {
+            const symbol = Symbol('something');
+            root[symbol] = 123;
+            expect(root[symbol]).toBe(123);
+        });
+        test('keeps default behaviour for $props', () => {
+            root = valueProxy({ $something: 456 });
+            expect(root.$something.$value()).toBe(456);
+        });
     });
 
     describe('valid data', () => {

@@ -71,11 +71,10 @@ const valueProxy = (() => {
             }
             // auto-bind public methods to enable access to privates
             if (prop.startsWith('$')) {
-                let value = Reflect.get(obj, prop);
+                const value = Reflect.get(obj, prop);
                 if (typeof value === 'function') {
-                    value = value.bind(obj);
+                    return value.bind(obj);
                 }
-                return value;
             }
             // hide private methods
             if (prop.startsWith('_')) {

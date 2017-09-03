@@ -16,4 +16,3 @@ TODO:
 - Add `$default` method
 - Add `$throw` method
 - Finish readme
-- Linter check
