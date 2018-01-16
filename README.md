@@ -2,7 +2,7 @@
 
 A small, proxy-based library for cleaner and safer model traversal.
 
-## Quick example
+## Quick example
 
 If we have to work with model objects in which any field could be missing/undefined/null, this expression can throw "undefined is not an object" error:
 
@@ -74,11 +74,11 @@ With lodash, `find` would be at the beginning, which is kind of inside-out:
     _.find(model.person.dogs, { id: 3 }).name;
 
 
-## Notes
+## Notes
 
 #### Under construction
 
-The library is not complete yet. It's a proof of concept. I have a bunch of other ideas and TODOs. (See TODO.md if you're interested.)
+The library is not complete yet. It's a proof of concept. I have a bunch of other ideas and [TODOs](https://github.com/zordone/value-proxy/blob/master/TODO.md).
 
 The only `lodash` method so far is `$_find`, but it's only a one-liner to add a new one.
 
